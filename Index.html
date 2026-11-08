@@ -1,1 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anne's Daily Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #fcfbf7;
+      color: #1a1a1a;
+      font-family: 'Newsreader', serif;
+    }
+    .broadsheet-title {
+      font-family: 'Cinzel', serif;
+    }
+    .broadsheet-body {
+      font-family: 'Libre Baskerville', serif;
+    }
+    .border-double-custom {
+      border-bottom-style: double;
+      border-bottom-width: 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto flex flex-col justify-between">
 
+  <!-- Header -->
+  <header class="text-center border-b-2 border-stone-800 pb-4 mb-6">
+    <div class="text-xs uppercase tracking-widest text-stone-600 mb-1 font-sans">The Morning Broadsheet Edition</div>
+    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 broadsheet-title uppercase">Anne's Daily Quiz</h1>
+    <div class="mt-2 text-sm italic text-stone-600 flex justify-between border-t border-b border-stone-300 py-1 px-2 mt-4 font-sans">
+      <span>15 Breakfast Questions</span>
+      <span id="quiz-date">Daily Edition</span>
+      <span>Read-Aloud Format</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main id="app-container" class="grow flex flex-col justify-center">
+    
+    <!-- Question View -->
+    <div id="question-card" class="bg-amber-50/40 border border-stone-300 p-6 sm:p-8 rounded-none shadow-sm relative">
+      
+      <!-- Progress & Category Bar -->
+      <div class="flex justify-between items-center text-xs font-sans tracking-wide uppercase text-stone-500 border-b border-stone-200 pb-3 mb-6">
+        <span id="question-number" class="font-bold text-stone-800">Question 1 of 15</span>
+        <span id="score-counter" class="font-mono">Score: 0</span>
+      </div>
+
+      <!-- Question Text -->
+      <div class="mb-6">
+        <h2 id="question-text" class="text-xl sm:text-2xl font-normal leading-relaxed text-stone-900">
+          Loading question...
+        </h2>
+      </div>
+
+      <!-- Options -->
+      <div id="options-container" class="space-y-3 mb-6 font-sans">
+        <!-- Buttons injected by JavaScript -->
+      </div>
+
+      <!-- Immediate Feedback / Knowledge Bite -->
+      <div id="feedback-container" class="hidden mt-6 p-4 bg-stone-100 border-l-4 border-stone-800 text-stone-800 transition-all">
+        <p id="feedback-result" class="font-bold font-sans text-sm uppercase tracking-wider mb-1"></p>
+        <p id="knowledge-bite" class="text-sm leading-relaxed broadsheet-body"></p>
+      </div>
+
+      <!-- Next Button -->
+      <div class="mt-6 text-right">
+        <button id="next-btn" onclick="nextQuestion()" class="hidden bg-stone-900 hover:bg-stone-800 text-amber-50 px-6 py-2.5 font-sans uppercase text-xs tracking-widest font-semibold transition-colors">
+          Next Question &rarr;
+        </button>
+      </div>
+    </div>
+
+    <!-- Results View (Hidden by default) -->
+    <div id="results-card" class="hidden bg-amber-50/40 border border-stone-300 p-8 text-center">
+      <h2 class="text-3xl font-bold broadsheet-title text-stone-900 mb-2">Quiz Complete!</h2>
+      <p class="text-sm font-sans uppercase tracking-widest text-stone-500 mb-6">Breakfast Table Scorecard</p>
+      
+      <div class="text-5xl font-extrabold text-stone-900 font-sans my-4" id="final-score">0 / 15</div>
+      
+      <div class="border-t border-b border-stone-300 py-6 my-6">
+        <p id="tier-title" class="text-xl font-bold text-stone-800 mb-2 broadsheet-title"></p>
+        <p id="tier-feedback" class="text-base text-stone-700 leading-relaxed max-w-xl mx-auto broadsheet-body italic"></p>
+      </div>
+
+      <button onclick="restartQuiz()" class="bg-stone-900 hover:bg-stone-800 text-amber-50 px-8 py-3 font-sans uppercase text-xs tracking-widest font-semibold transition-colors">
+        Try Again / New Round
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-8 text-center text-xs font-sans text-stone-500 border-t border-stone-300 pt-4">
+    Crafted for reading out loud over breakfast • No dynamic backend required
+  </footer>
+
+  <script>
+    const quizData = [
+      {
+        q: "1. [Current Events] Which European city saw its famous dividing wall fall on November 9, 1989?",
+        options: ["A) Vienna", "B) Berlin", "C) Warsaw", "D) Prague"],
+        answer: 1,
+        bite: "The fall of the Berlin Wall marked the collapse of the Iron Curtain and paved the way for German reunification."
+      },
+      {
+        q: "2. [1970s Music] Which British band released the iconic 1973 album 'Dark Side of the Moon'?",
+        options: ["A) Led Zeppelin", "B) The Who", "C) Pink Floyd", "D) Queen"],
+        answer: 2,
+        bite: "Pink Floyd's landmark album remained on the Billboard charts for an unprecedented 937 weeks."
+      },
+      {
+        q: "3. [Australian History] Which explorer and astronomer led the construction of the 1872 Overland Telegraph Line?",
+        options: ["A) Sir Charles Todd", "B) John McDouall Stuart", "C) Robert O'Hara Burke", "D) Ludwig Leichhardt"],
+        answer: 0,
+        bite: "Sir Charles Todd overseen the mammoth task linking Adelaide to Darwin, connecting Australia instantly to London."
+      },
+      {
+        q: "4. [Literature] In which 1930 novel did Agatha Christie first introduce Miss Jane Marple?",
+        options: ["A) 4.50 from Paddington", "B) The Murder at the Vicarage", "C) Mrs. McGinty's Dead", "D) The Body in the Library"],
+        answer: 1,
+        bite: "The Murder at the Vicarage was the first full-length novel featuring St. Mary Mead's keenest observer."
+      },
+      {
+        q: "5. [Crafts & Architecture] What is the traditional Japanese wood-charring technique 'Shou Sugi Ban' used for?",
+        options: ["A) Bleaching timber white", "B) Weatherproofing and preserving wood", "C) Polishing indoor floors", "D) Bending bamboo framing"],
+        answer: 1,
+        bite: "Charring the timber surface creates a natural carbon layer that repels rot, insects, and water."
+      },
+      {
+        q: "6. [1980s Cinema] Who directed the classic 1982 dystopian sci-fi film 'Blade Runner'?",
+        options: ["A) Steven Spielberg", "B) Ridley Scott", "C) James Cameron", "D) George Lucas"],
+        answer: 1,
+        bite: "Ridley Scott adapted Philip K. Dick's story into an iconic vision of future Los Angeles."
+      },
+      {
+        q: "7. [Science & Tech] What does the acronym 'V2L' stand for in modern electric vehicle technology?",
+        options: ["A) Voltage to Line", "B) Velocity to Limit", "C) Vehicle-to-Load", "D) Variable to Level"],
+        answer: 2,
+        bite: "Vehicle-to-Load capability lets an electric car export its battery power to supply electricity to external appliances."
+      },
+      {
+        q: "8. [1960s Music] Which Beatles album features the famous zebra-crossing album cover shot in 1969?",
+        options: ["A) Revolver", "B) Abbey Road", "C) Rubber Soul", "D) Help!"],
+        answer: 1,
+        bite: "Abbey Road was the final album recorded by all four Beatles together."
+      },
+      {
+        q: "9. [Geography] Which NSW town is known as the gateway to the Siding Spring Observatory?",
+        options: ["A) Coonabarabran", "B) Dubbo", "C) Parkes", "D) Tamworth"],
+        answer: 0,
+        bite: "Coonabarabran sits on the edge of the Warrumbungle National Park, renowned for its crystal-clear night skies."
+      },
+      {
+        q: "10. [1990s Cinema] Which 1994 film starring Tom Hanks won the Academy Award for Best Picture?",
+        options: ["A) Pulp Fiction", "B) The Shawshank Redemption", "C) Forrest Gump", "D) Apollo 13"],
+        answer: 2,
+        bite: "Forrest Gump swept the 67th Academy Awards, winning Best Picture, Best Director, and Best Actor."
+      },
+      {
+        q: "11. [Environmental Science] What is the primary purpose of a first-flush diverter on a rainwater system?",
+        options: ["A) To pressurize house taps", "B) To isolate initial dirty roof runoff", "C) To boil stored water", "D) To add chlorine"],
+        answer: 1,
+        bite: "It prevents dust, pollen, and debris from the roof from washing directly into the main rainwater tank."
+      },
+      {
+        q: "12. [2000s Music] Which Australian pop icon released the global smash hit 'Can't Get You Out of My Head' in 2001?",
+        options: ["A) Kylie Minogue", "B) Natalie Imbruglia", "C) Sia", "D) Delta Goodrem"],
+        answer: 0,
+        bite: "Kylie Minogue's track reached number one in over 40 countries worldwide."
+      },
+      {
+        q: "13. [Regional History] Which northern Victorian agricultural town sits along the Loddon River?",
+        options: ["A) Echuca", "B) Kerang", "C) Seymour", "D) Castlemaine"],
+        answer: 1,
+        bite: "Kerang is a hub for the surrounding irrigation district and pioneer history in Victoria."
+      },
+      {
+        q: "14. [Modern Cinema] Which director helmed 'Hunt for the Wilderpeople' and 'Jojo Rabbit'?",
+        options: ["A) Peter Jackson", "B) Taika Waititi", "C) Jane Campion", "D) Baz Luhrmann"],
+        answer: 1,
+        bite: "New Zealand filmmaker Taika Waititi is celebrated for his unique mix of heartfelt comedy and quick wit."
+      },
+      {
+        q: "15. [Literature & Crime] In Agatha Christie's '4.50 from Paddington', how is the murder witnessed?",
+        options: ["A) Through a telescope", "B) From a passing train window", "C) In a mirror reflection", "D) Over a telephone call"],
+        answer: 1,
+        bite: "Mrs. McGillicuddy spots the crime through the window of a parallel train as it briefly runs alongside hers."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    // Set today's date in header
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('quiz-date').textContent = new Date().toLocaleDateString('en-US', options);
+
+    function loadQuestion() {
+      answered = false;
+      const current = quizData[currentQuestionIndex];
+      
+      document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+      document.getElementById('score-counter').textContent = `Score: ${score}`;
+      document.getElementById('question-text').textContent = current.q;
+      
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+      
+      current.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3.5 border border-stone-300 bg-white hover:bg-stone-50 font-medium text-stone-800 transition-colors flex justify-between items-center";
+        btn.textContent = opt;
+        btn.onclick = () => selectOption(index);
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById('feedback-container').classList.add('hidden');
+      document.getElementById('next-btn').classList.add('hidden');
+    }
+
+    function selectOption(index) {
+      if (answered) return;
+      answered = true;
+      
+      const current = quizData[currentQuestionIndex];
+      const buttons = document.getElementById('options-container').children;
+      const feedbackContainer = document.getElementById('feedback-container');
+      const feedbackResult = document.getElementById('feedback-result');
+      const knowledgeBite = document.getElementById('knowledge-bite');
+
+      if (index === current.answer) {
+        score++;
+        document.getElementById('score-counter').textContent = `Score: ${score}`;
+        buttons[index].classList.remove('bg-white', 'hover:bg-stone-50');
+        buttons[index].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
+        feedbackResult.textContent = "Correct!";
+        feedbackResult.className = "font-bold font-sans text-sm uppercase tracking-wider mb-1 text-emerald-800";
+      } else {
+        buttons[index].classList.remove('bg-white', 'hover:bg-stone-50');
+        buttons[index].classList.add('bg-rose-100', 'border-rose-400', 'text-rose-900');
+        buttons[current.answer].classList.remove('bg-white', 'hover:bg-stone-50');
+        buttons[current.answer].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
+        feedbackResult.textContent = "Not quite!";
+        feedbackResult.className = "font-bold font-sans text-sm uppercase tracking-wider mb-1 text-rose-800";
+      }
+
+      knowledgeBite.textContent = current.bite;
+      feedbackContainer.classList.remove('hidden');
+      document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('question-card').classList.add('hidden');
+      const resultsCard = document.getElementById('results-card');
+      resultsCard.classList.remove('hidden');
+
+      document.getElementById('final-score').textContent = `${score} / ${quizData.length}`;
+
+      const tierTitle = document.getElementById('tier-title');
+      const tierFeedback = document.getElementById('tier-feedback');
+
+      if (score >= 13) {
+        tierTitle.textContent = "Mastermind Status!";
+        tierFeedback.textContent = "Outstanding work over coffee! You sailed through historic telegraph lines, 70s rock, classic cinema, and Agatha Christie whodunits with complete confidence.";
+      } else if (score >= 9) {
+        tierTitle.textContent = "Sharp as a Tack!";
+        tierFeedback.textContent = "A wonderful score! You have great broadsheet instincts across the decades and sciences. Tomorrow's board doesn't stand a chance.";
+      } else {
+        tierTitle.textContent = "Splendid Warm-Up!";
+        tierFeedback.textContent = "A fine effort for first thing in the morning. Every great morning start begins with a good challenge—keep that curiosity sharp!";
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      document.getElementById('results-card').classList.add('hidden');
+      document.getElementById('question-card').classList.remove('hidden');
+      loadQuestion();
+    }
+
+    // Initialize first question on load
+    loadQuestion();
+  </script>
+</body>
+</html>
