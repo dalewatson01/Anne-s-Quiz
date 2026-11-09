@@ -4,605 +4,412 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Anne's Daily Quiz</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --paper: #fcfbf7;
-      --ink: #1a1a1a;
-      --stone-800: #292524;
-      --stone-600: #57534e;
-      --stone-300: #d6d3d1;
-      --stone-200: #e7e5e4;
-      --stone-100: #f5f5f4;
-      --amber-soft: rgba(251, 191, 36, 0.08);
-      --green-soft: #dcfce7;
-      --green-strong: #166534;
-      --red-soft: #fee2e2;
-      --red-strong: #7f1d1d;
-      --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      --bg-color: #fcfbf7;
+      --card-bg: #ffffff;
+      --text-color: #1a1a1a;
+      --accent-color: #2b2b2b;
+      --border-color: #d1d1d1;
+      --correct-bg: #e6f4ea;
+      --correct-border: #2e7d32;
+      --wrong-bg: #fce8e6;
+      --wrong-border: #c62828;
+      --button-bg: #f4f3ef;
+      --button-hover: #e8e6e0;
+      --font-family: Georgia, 'Times New Roman', Times, serif;
     }
-
-    * { box-sizing: border-box; }
 
     body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-family);
       margin: 0;
-      background-color: var(--paper);
-      color: var(--ink);
-      font-family: 'Newsreader', serif;
-      min-height: 100vh;
-      padding: 2rem 1rem;
+      padding: 20px;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
     }
 
-    .broadsheet-title {
-      font-family: 'Cinzel', serif;
+    .quiz-container {
+      max-width: 650px;
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
 
-    .broadsheet-body {
-      font-family: 'Libre Baskerville', serif;
-    }
-
-    .border-double-custom {
-      border-bottom-style: double;
-      border-bottom-width: 4px;
-    }
-
-    #app-container {
-      width: min(100%, 48rem);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: calc(100vh - 6rem);
-    }
-
-    header {
+    .header {
       text-align: center;
-      border-bottom: 2px solid var(--stone-800);
-      padding-bottom: 1rem;
-      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
     }
 
-    .edition-meta {
-      font-size: 0.7rem;
-      letter-spacing: 0.35rem;
-      text-transform: uppercase;
-      color: var(--stone-600);
-      margin-bottom: 0.35rem;
-      font-family: sans-serif;
-    }
-
-    h1 {
+    .header h1 {
       margin: 0;
-      font-size: clamp(2.5rem, 4vw, 4rem);
-      font-weight: 700;
-      letter-spacing: -0.04em;
+      font-size: 28px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
-      color: var(--stone-800);
-      font-family: 'Cinzel', serif;
     }
 
-    .date-bar {
+    .header p {
+      margin: 5px 0 0 0;
+      font-style: italic;
+      color: #555;
+    }
+
+    .stats-bar {
       display: flex;
       justify-content: space-between;
-      gap: 0.75rem;
-      border-top: 1px solid var(--stone-300);
-      border-bottom: 1px solid var(--stone-300);
-      margin-top: 1rem;
-      padding: 0.35rem 0.5rem;
-      font-size: 0.875rem;
-      font-style: italic;
-      color: var(--stone-600);
-      font-family: sans-serif;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: bold;
     }
 
-    #question-card,
-    #results-card {
-      background: rgba(251, 191, 36, 0.05);
-      border: 1px solid var(--stone-300);
-      padding: 1.5rem 1.5rem 1.75rem;
-      box-shadow: var(--card-shadow);
-      position: relative;
+    .question-card {
+      margin-bottom: 20px;
     }
 
-    #results-card {
-      text-align: center;
+    .question-text {
+      font-size: 18px;
+      line-height: 1.4;
+      margin-bottom: 20px;
+      font-weight: bold;
     }
 
-    #question-card.hidden,
-    #results-card.hidden,
-    #feedback-container.hidden,
-    #next-btn.hidden {
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      background-color: var(--button-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 12px 16px;
+      font-family: var(--font-family);
+      font-size: 16px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background-color: var(--button-hover);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-btn.correct {
+      background-color: var(--correct-bg) !important;
+      border-color: var(--correct-border) !important;
+      font-weight: bold;
+    }
+
+    .option-btn.wrong {
+      background-color: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+    }
+
+    .feedback-box {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      border-left: 4px solid var(--accent-color);
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .next-btn, .reset-btn {
+      margin-top: 25px;
+      width: 100%;
+      background-color: var(--accent-color);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      font-family: var(--font-family);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .next-btn:hover, .reset-btn:hover {
+      background-color: #444;
+    }
+
+    .hidden {
       display: none !important;
     }
 
-    .progress-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      letter-spacing: 0.12rem;
-      text-transform: uppercase;
-      color: var(--stone-500);
-      border-bottom: 1px solid var(--stone-200);
-      padding-bottom: 0.75rem;
-      margin-bottom: 1.5rem;
-      font-family: sans-serif;
-    }
-
-    #question-number {
-      font-weight: 700;
-      color: var(--stone-800);
-    }
-
-    #score-counter {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-
-    #question-text {
-      margin: 0;
-      font-size: clamp(1.25rem, 3vw, 2rem);
-      line-height: 1.6;
-      color: var(--stone-800);
-      font-weight: 400;
-    }
-
-    #options-container {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-      font-family: sans-serif;
-    }
-
-    #options-container button.option-btn {
-      width: 100%;
-      text-align: left;
-      padding: 0.9rem 1rem;
-      border: 1px solid var(--stone-300);
-      background: #fff;
-      color: var(--stone-800);
-      font-size: 1rem;
-      font-weight: 500;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-    }
-
-    #options-container button.option-btn:hover {
-      background: #f9f7f5;
-    }
-
-    #options-container button.option-btn.is-correct {
-      background: var(--green-soft);
-      border-color: #22c55e;
-      color: var(--green-strong);
-      font-weight: 700;
-    }
-
-    #options-container button.option-btn.is-wrong {
-      background: var(--red-soft);
-      border-color: #f87171;
-      color: var(--red-strong);
-    }
-
-    #feedback-container {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: var(--stone-100);
-      border-left: 4px solid var(--stone-800);
-      color: var(--stone-800);
-    }
-
-    #feedback-result {
-      margin: 0 0 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.12rem;
-      font-family: sans-serif;
-      text-transform: uppercase;
-    }
-
-    #feedback-result.correct {
-      color: var(--green-strong);
-    }
-
-    #feedback-result.incorrect {
-      color: var(--red-strong);
-    }
-
-    #knowledge-bite {
-      margin: 0;
-      font-size: 0.95rem;
-      line-height: 1.7;
-      font-family: 'Libre Baskerville', serif;
-    }
-
-    #next-btn {
-      display: inline-block;
-      background: var(--stone-800);
-      color: #f8fafc;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.2rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      font-family: sans-serif;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    #next-btn:hover {
-      background: #44403c;
-    }
-
-    .next-wrap {
-      margin-top: 1.5rem;
-      text-align: right;
-    }
-
-    #results-card h2 {
-      margin: 0 0 0.5rem;
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 700;
-      color: var(--stone-900);
-      font-family: 'Cinzel', serif;
-    }
-
-    .results-subtitle {
-      margin: 0 0 1.5rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.3rem;
-      text-transform: uppercase;
-      color: var(--stone-500);
-      font-family: sans-serif;
-    }
-
-    #final-score {
-      margin: 1rem 0;
-      font-size: clamp(2.5rem, 7vw, 4rem);
-      font-weight: 800;
-      color: var(--stone-900);
-      font-family: sans-serif;
-    }
-
-    .results-tier {
-      border-top: 1px solid var(--stone-300);
-      border-bottom: 1px solid var(--stone-300);
-      padding: 1.5rem 0;
-      margin: 1.5rem 0;
-    }
-
-    #tier-title {
-      margin: 0 0 0.75rem;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--stone-800);
-      font-family: 'Cinzel', serif;
-    }
-
-    #tier-feedback {
-      margin: 0 auto;
-      max-width: 40rem;
-      line-height: 1.75;
-      font-size: 1rem;
-      color: var(--stone-700);
-      font-family: 'Libre Baskerville', serif;
-      font-style: italic;
-    }
-
-    .results-button {
-      background: var(--stone-800);
-      color: #f8fafc;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.2rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      font-family: sans-serif;
-      cursor: pointer;
-    }
-
-    footer {
-      margin-top: 2rem;
+    .scorecard {
       text-align: center;
-      font-size: 0.7rem;
-      color: var(--stone-500);
-      border-top: 1px solid var(--stone-300);
-      padding-top: 1rem;
-      font-family: sans-serif;
     }
 
-    @media (max-width: 640px) {
-      body { padding: 1.25rem 0.75rem; }
-      #question-card,
-      #results-card { padding: 1.25rem 1rem; }
-      .date-bar { flex-direction: column; text-align: center; }
-      .progress-bar { gap: 0.5rem; font-size: 0.68rem; }
-      #options-container button.option-btn { font-size: 0.95rem; }
-      #next-btn, .results-button { letter-spacing: 0.12rem; }
+    .scorecard h2 {
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .scorecard .score-display {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .scorecard .cumulative-display {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .scorecard .feedback-text {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 25px;
     }
   </style>
 </head>
-<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto flex flex-col justify-between">
+<body>
 
-  <!-- Header -->
-  <header class="text-center border-b-2 border-stone-800 pb-4 mb-6">
-    <div class="edition-meta">The Morning Broadsheet Edition</div>
+<div class="quiz-container">
+  <div class="header">
     <h1>Anne's Daily Quiz</h1>
-    <div class="date-bar">
-      <span>15 Breakfast Questions</span>
-      <span id="quiz-date">Daily Edition</span>
-      <span>Read-Aloud Format</span>
-    </div>
-  </header>
+    <p>Broadsheet Edition</p>
+  </div>
 
-  <!-- Main Container -->
-  <main id="app-container" class="grow flex flex-col justify-center">
-    
-    <!-- Question View -->
-    <div id="question-card" class="bg-amber-50/40 border border-stone-300 p-6 sm:p-8 rounded-none shadow-sm relative">
-      
-      <!-- Progress & Category Bar -->
-      <div class="progress-bar">
-        <span id="question-number" class="font-bold text-stone-800">Question 1 of 15</span>
-        <span id="score-counter" class="font-mono">Score: 0</span>
-      </div>
-
-      <!-- Question Text -->
-      <div class="mb-6">
-        <h2 id="question-text" class="text-xl sm:text-2xl font-normal leading-relaxed text-stone-900">
-          Loading question...
-        </h2>
-      </div>
-
-      <!-- Options -->
-      <div id="options-container" class="space-y-3 mb-6 font-sans">
-        <!-- Buttons injected by JavaScript -->
-      </div>
-
-      <!-- Immediate Feedback / Knowledge Bite -->
-      <div id="feedback-container" class="hidden mt-6 p-4 bg-stone-100 border-l-4 border-stone-800 text-stone-800 transition-all">
-        <p id="feedback-result" class="font-bold font-sans text-sm uppercase tracking-wider mb-1"></p>
-        <p id="knowledge-bite" class="text-sm leading-relaxed broadsheet-body"></p>
-      </div>
-
-      <!-- Next Button -->
-      <div class="next-wrap">
-        <button id="next-btn" onclick="nextQuestion()" class="hidden bg-stone-900 hover:bg-stone-800 text-amber-50 px-6 py-2.5 font-sans uppercase text-xs tracking-widest font-semibold transition-colors">
-          Next Question &rarr;
-        </button>
-      </div>
+  <div id="quiz-ui">
+    <div class="stats-bar">
+      <span id="question-tracker">Question 1 of 15</span>
+      <span id="session-score">Score: 0</span>
     </div>
 
-    <!-- Results View (Hidden by default) -->
-    <div id="results-card" class="hidden bg-amber-50/40 border border-stone-300 p-8 text-center">
-      <h2 class="text-3xl font-bold broadsheet-title text-stone-900 mb-2">Quiz Complete!</h2>
-      <p class="results-subtitle">Breakfast Table Scorecard</p>
-      
-      <div class="text-5xl font-extrabold text-stone-900 font-sans my-4" id="final-score">0 / 15</div>
-      
-      <div class="results-tier">
-        <p id="tier-title" class="text-xl font-bold text-stone-800 mb-2 broadsheet-title"></p>
-        <p id="tier-feedback" class="text-base text-stone-700 leading-relaxed max-w-xl mx-auto broadsheet-body italic"></p>
-      </div>
-
-      <button onclick="restartQuiz()" class="results-button">
-        Try Again / New Round
-      </button>
+    <div class="question-card">
+      <div id="question-text" class="question-text"></div>
+      <div id="options-container" class="options-grid"></div>
     </div>
 
-  </main>
+    <div id="feedback-box" class="feedback-box hidden"></div>
 
-  <!-- Footer -->
-  <footer>
-    Crafted for reading out loud over breakfast • No dynamic backend required
-  </footer>
+    <button id="next-btn" class="next-btn hidden" onclick="nextQuestion()">Next Question</button>
+  </div>
 
-  <script>
-    const quizData = [
-      {
-        q: "1. [Current Events] Which European city saw its famous dividing wall fall on November 9, 1989?",
-        options: ["A) Vienna", "B) Berlin", "C) Warsaw", "D) Prague"],
-        answer: 1,
-        bite: "The fall of the Berlin Wall marked the collapse of the Iron Curtain and paved the way for German reunification."
-      },
-      {
-        q: "2. [1970s Music] Which British band released the iconic 1973 album 'Dark Side of the Moon'?",
-        options: ["A) Led Zeppelin", "B) The Who", "C) Pink Floyd", "D) Queen"],
-        answer: 2,
-        bite: "Pink Floyd's landmark album remained on the Billboard charts for an unprecedented 937 weeks."
-      },
-      {
-        q: "3. [Australian History] Which explorer and astronomer led the construction of the 1872 Overland Telegraph Line?",
-        options: ["A) Sir Charles Todd", "B) John McDouall Stuart", "C) Robert O'Hara Burke", "D) Ludwig Leichhardt"],
-        answer: 0,
-        bite: "Sir Charles Todd overseen the mammoth task linking Adelaide to Darwin, connecting Australia instantly to London."
-      },
-      {
-        q: "4. [Literature] In which 1930 novel did Agatha Christie first introduce Miss Jane Marple?",
-        options: ["A) 4.50 from Paddington", "B) The Murder at the Vicarage", "C) Mrs. McGinty's Dead", "D) The Body in the Library"],
-        answer: 1,
-        bite: "The Murder at the Vicarage was the first full-length novel featuring St. Mary Mead's keenest observer."
-      },
-      {
-        q: "5. [Crafts & Architecture] What is the traditional Japanese wood-charring technique 'Shou Sugi Ban' used for?",
-        options: ["A) Bleaching timber white", "B) Weatherproofing and preserving wood", "C) Polishing indoor floors", "D) Bending bamboo framing"],
-        answer: 1,
-        bite: "Charring the timber surface creates a natural carbon layer that repels rot, insects, and water."
-      },
-      {
-        q: "6. [1980s Cinema] Who directed the classic 1982 dystopian sci-fi film 'Blade Runner'?",
-        options: ["A) Steven Spielberg", "B) Ridley Scott", "C) James Cameron", "D) George Lucas"],
-        answer: 1,
-        bite: "Ridley Scott adapted Philip K. Dick's story into an iconic vision of future Los Angeles."
-      },
-      {
-        q: "7. [Science & Tech] What does the acronym 'V2L' stand for in modern electric vehicle technology?",
-        options: ["A) Voltage to Line", "B) Velocity to Limit", "C) Vehicle-to-Load", "D) Variable to Level"],
-        answer: 2,
-        bite: "Vehicle-to-Load capability lets an electric car export its battery power to supply electricity to external appliances."
-      },
-      {
-        q: "8. [1960s Music] Which Beatles album features the famous zebra-crossing album cover shot in 1969?",
-        options: ["A) Revolver", "B) Abbey Road", "C) Rubber Soul", "D) Help!"],
-        answer: 1,
-        bite: "Abbey Road was the final album recorded by all four Beatles together."
-      },
-      {
-        q: "9. [Geography] Which NSW town is known as the gateway to the Siding Spring Observatory?",
-        options: ["A) Coonabarabran", "B) Dubbo", "C) Parkes", "D) Tamworth"],
-        answer: 0,
-        bite: "Coonabarabran sits on the edge of the Warrumbungle National Park, renowned for its crystal-clear night skies."
-      },
-      {
-        q: "10. [1990s Cinema] Which 1994 film starring Tom Hanks won the Academy Award for Best Picture?",
-        options: ["A) Pulp Fiction", "B) The Shawshank Redemption", "C) Forrest Gump", "D) Apollo 13"],
-        answer: 2,
-        bite: "Forrest Gump swept the 67th Academy Awards, winning Best Picture, Best Director, and Best Actor."
-      },
-      {
-        q: "11. [Environmental Science] What is the primary purpose of a first-flush diverter on a rainwater system?",
-        options: ["A) To pressurize house taps", "B) To isolate initial dirty roof runoff", "C) To boil stored water", "D) To add chlorine"],
-        answer: 1,
-        bite: "It prevents dust, pollen, and debris from the roof from washing directly into the main rainwater tank."
-      },
-      {
-        q: "12. [2000s Music] Which Australian pop icon released the global smash hit 'Can't Get You Out of My Head' in 2001?",
-        options: ["A) Kylie Minogue", "B) Natalie Imbruglia", "C) Sia", "D) Delta Goodrem"],
-        answer: 0,
-        bite: "Kylie Minogue's track reached number one in over 40 countries worldwide."
-      },
-      {
-        q: "13. [Regional History] Which northern Victorian agricultural town sits along the Loddon River?",
-        options: ["A) Echuca", "B) Kerang", "C) Seymour", "D) Castlemaine"],
-        answer: 1,
-        bite: "Kerang is a hub for the surrounding irrigation district and pioneer history in Victoria."
-      },
-      {
-        q: "14. [Modern Cinema] Which director helmed 'Hunt for the Wilderpeople' and 'Jojo Rabbit'?",
-        options: ["A) Peter Jackson", "B) Taika Waititi", "C) Jane Campion", "D) Baz Luhrmann"],
-        answer: 1,
-        bite: "New Zealand filmmaker Taika Waititi is celebrated for his unique mix of heartfelt comedy and quick wit."
-      },
-      {
-        q: "15. [Literature & Crime] In Agatha Christie's '4.50 from Paddington', how is the murder witnessed?",
-        options: ["A) Through a telescope", "B) From a passing train window", "C) In a mirror reflection", "D) Over a telephone call"],
-        answer: 1,
-        bite: "Mrs. McGillicuddy spots the crime through the window of a parallel train as it briefly runs alongside hers."
+  <div id="scorecard-ui" class="scorecard hidden">
+    <h2>Quiz Complete</h2>
+    <div id="final-score" class="score-display"></div>
+    <div id="cumulative-score" class="cumulative-display"></div>
+    <div id="final-feedback" class="feedback-text"></div>
+    <button class="reset-btn" onclick="restartQuiz()">Start Fresh Quiz</button>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      q: "1. Which 1971 album by David Bowie featured the iconic track 'Life on Mars?' and marked his transition toward glam rock?",
+      options: ["The Man Who Sold the World", "Hunky Dory", "Aladdin Sane", "Space Oddity"],
+      answer: 1,
+      bite: "'Hunky Dory' was Bowie's fourth studio album and laid the foundational artistic style for his famous Ziggy Stardust persona."
+    },
+    {
+      q: "2. Which innovative 1968 Stanley Kubrick film famously featured the blue Danube waltz during its orbital space station sequences?",
+      options: ["Solaris", "2001: A Space Odyssey", "Silent Running", "A Clockwork Orange"],
+      answer: 1,
+      bite: "Kubrick used Johann Strauss II's 'The Blue Danube' to give space travel a grace and rhythm resembling a delicate ballet."
+    },
+    {
+      q: "3. Completed in 1872 under Sir Charles Todd, which northern coastal settlement served as the Australian terminus for the Overland Telegraph Line?",
+      options: ["Broome", "Port Darwin", "Palmerston North", "Cooktown"],
+      answer: 1,
+      bite: "The line linked Adelaide directly to Port Darwin, where an undersea cable connected Australia to Java and the rest of the world."
+    },
+    {
+      q: "4. In Agatha Christie's 1942 novel 'The Body in the Library', in whose residence is the victim's body unexpectedly discovered?",
+      options: ["Colonel and Mrs. Bantry", "Jane Marple", "Superintendent Slack", "Sir Henry Clithering"],
+      answer: 0,
+      bite: "The victim is found in Gossington Hall, the home of Arthur and Dolly Bantry, prompting Mrs. Bantry to call her friend Miss Marple."
+    },
+    {
+      q: "5. Which 1980s synth-pop group had a massive global hit with 'Blue Monday', often cited as the best-selling 12-inch single of all time?",
+      options: ["Depeche Mode", "New Order", "Pet Shop Boys", "Tears for Fears"],
+      answer: 1,
+      bite: "Released in 1983 by New Order, 'Blue Monday' stood out for its distinctive die-cut floppy disk sleeve designed by Peter Saville."
+    },
+    {
+      q: "6. What structural function does a first-flush diverter serve in domestic rainwater harvesting systems?",
+      options: ["Maintains water pressure in low taps", "Isolates the initial dirty roof runoff from entering the tank", "Automatically chlorinates incoming water", "Filters out heavy metal minerals"],
+      answer: 1,
+      bite: "First-flush diverters channel the first batch of rainfall (containing dust, pollen, and debris) away from your primary water storage."
+    },
+    {
+      q: "7. Which famous New Zealand television detective series, set in a fictional town, follows Detective Senior Sergeant Mike Shepherd?",
+      options: ["Top of the Lake", "The Brokenwood Mysteries", "My Life Is Murder", "Shortland Street"],
+      answer: 1,
+      bite: "Mike Shepherd is famous for driving a classic 1971 Holden Kingswood and listening to country-western audio cassettes while solving cases."
+    },
+    {
+      q: "8. Directed by Quentin Tarantino in 1994, which Palme d'Or winner intertwined multiple Los Angeles crime stories in a non-linear narrative?",
+      options: ["Reservoir Dogs", "Pulp Fiction", "Jackie Brown", "True Romance"],
+      answer: 1,
+      bite: "'Pulp Fiction' revitalized John Travolta's career and became a definitive cultural landmark of 1990s cinema."
+    },
+    {
+      q: "9. Which New South Wales mountain range hosts the Siding Spring Observatory, home to Australia's premier optical telescopes?",
+      options: ["The Blue Mountains", "The Warrumbungles", "The Snowy Mountains", "The MacDonnell Ranges"],
+      answer: 1,
+      bite: "Siding Spring Observatory sits on the edge of the Warrumbungle National Park, benefiting from dark skies and low light pollution."
+    },
+    {
+      q: "10. What traditional Japanese technique preserves exterior timber planks by charring them with fire?",
+      options: ["Kintsugi", "Shou Sugi Ban", "Tatami", "Kumiko"],
+      answer: 1,
+      bite: "Shou Sugi Ban (Yakisugi) creates a durable, carbonized layer that protects wood against weather, rot, insects, and decay."
+    },
+    {
+      q: "11. Which 1977 Fleetwood Mac album was written during intense personal turbulence among band members and went on to sell over 40 million copies?",
+      options: ["Tusk", "Rumours", "Mirage", "Tango in the Night"],
+      answer: 1,
+      bite: "'Rumours' produced classic singles like 'Go Your Own Way', 'Dreams', and 'Don't Stop', staying atop global album charts for months."
+    },
+    {
+      q: "12. In automotive technology, what capability does 'V2L' (Vehicle-to-Load) provide to an electric vehicle owner?",
+      options: ["Powers external AC electrical devices directly from the car's battery", "Increases high-speed charging rate by 50%", "Measures luggage cargo capacity automatically", "Locks doors automatically upon driver departure"],
+      answer: 0,
+      bite: "V2L lets an EV function as a portable power station, operating appliances, tools, or camping equipment directly from the car battery."
+    },
+    {
+      q: "13. Which historic Melbourne roasting company, established in 1938 on Shield Street, is famous for introducing Italian-style espresso to Victoria?",
+      options: ["Seven Seeds", "Quists Coffee", "St Ali", "Proud Mary"],
+      answer: 1,
+      bite: "Quists Coffee is celebrated as Melbourne's first dedicated coffee roaster, supplying specialty single-origin and blended beans for decades."
+    },
+    {
+      q: "14. Directed by Ridley Scott in 1982, which sci-fi noir masterpiece features Harrison Ford as a detective hunting synthetic humanoids in 2019 Los Angeles?",
+      options: ["Total Recall", "Blade Runner", "The Running Man", "Escape from New York"],
+      answer: 1,
+      bite: "Adapted from Philip K. Dick's story, 'Blade Runner' set the aesthetic standard for modern cyberpunk cinema."
+    },
+    {
+      q: "15. Which Australian musical icon achieved international chart-topping success in 2001 with 'Can't Get You Out of My Head'?",
+      options: ["Tina Arena", "Kylie Minogue", "Delta Goodrem", "Natalie Imbruglia"],
+      answer: 1,
+      bite: "The track's hypnotic 'la la la' hook became one of the most played pop records of the decade across Europe and Australia."
+    }
+  ];
+
+  let currentIdx = 0;
+  let currentScore = 0;
+
+  function initApp() {
+    currentIdx = 0;
+    currentScore = 0;
+    document.getElementById('quiz-ui').classList.remove('hidden');
+    document.getElementById('scorecard-ui').classList.add('hidden');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = questions[currentIdx];
+    document.getElementById('question-tracker').innerText = `Question ${currentIdx + 1} of ${questions.length}`;
+    document.getElementById('session-score').innerText = `Score: ${currentScore}`;
+    document.getElementById('question-text').innerText = q.q;
+
+    const optionsContainer = document.getElementById('options-container');
+    optionsContainer.innerHTML = '';
+
+    q.options.forEach((optText, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = `${String.fromCharCode(65 + idx)}) ${optText}`;
+      btn.onclick = () => selectOption(idx);
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('feedback-box').classList.add('hidden');
+    document.getElementById('next-btn').classList.add('hidden');
+  }
+
+  function selectOption(selectedIdx) {
+    const q = questions[currentIdx];
+    const buttons = document.querySelectorAll('.option-btn');
+
+    buttons.forEach((btn, idx) => {
+      btn.disabled = true;
+      if (idx === q.answer) {
+        btn.classList.add('correct');
+      } else if (idx === selectedIdx) {
+        btn.classList.add('wrong');
       }
-    ];
+    });
 
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let answered = false;
-
-    // Set today's date in header
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('quiz-date').textContent = new Date().toLocaleDateString('en-US', options);
-
-    function loadQuestion() {
-      answered = false;
-      const current = quizData[currentQuestionIndex];
-      
-      document.getElementById('question-number').textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
-      document.getElementById('score-counter').textContent = `Score: ${score}`;
-      document.getElementById('question-text').textContent = current.q;
-      
-      const optionsContainer = document.getElementById('options-container');
-      optionsContainer.innerHTML = '';
-      
-      current.options.forEach((opt, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.textContent = opt;
-        btn.onclick = () => selectOption(index);
-        optionsContainer.appendChild(btn);
-      });
-
-      const feedbackContainer = document.getElementById('feedback-container');
-      feedbackContainer.classList.add('hidden');
-      document.getElementById('next-btn').classList.add('hidden');
+    if (selectedIdx === q.answer) {
+      currentScore++;
+      document.getElementById('session-score').innerText = `Score: ${currentScore}`;
     }
 
-    function selectOption(index) {
-      if (answered) return;
-      answered = true;
-      
-      const current = quizData[currentQuestionIndex];
-      const buttons = document.getElementById('options-container').children;
-      const feedbackContainer = document.getElementById('feedback-container');
-      const feedbackResult = document.getElementById('feedback-result');
-      const knowledgeBite = document.getElementById('knowledge-bite');
+    const feedbackBox = document.getElementById('feedback-box');
+    feedbackBox.innerText = q.bite;
+    feedbackBox.classList.remove('hidden');
 
-      buttons[index].classList.add(index === current.answer ? 'is-correct' : 'is-wrong');
-
-      if (index === current.answer) {
-        score++;
-        document.getElementById('score-counter').textContent = `Score: ${score}`;
-        feedbackResult.textContent = 'Correct!';
-        feedbackResult.className = 'correct';
-      } else {
-        buttons[current.answer].classList.add('is-correct');
-        feedbackResult.textContent = 'Not quite!';
-        feedbackResult.className = 'incorrect';
-      }
-
-      knowledgeBite.textContent = current.bite;
-      feedbackContainer.classList.remove('hidden');
-      document.getElementById('next-btn').classList.remove('hidden');
+    const nextBtn = document.getElementById('next-btn');
+    if (currentIdx === questions.length - 1) {
+      nextBtn.innerText = 'Show Final Scorecard';
+    } else {
+      nextBtn.innerText = 'Next Question';
     }
+    nextBtn.classList.remove('hidden');
+  }
 
-    function nextQuestion() {
-      currentQuestionIndex++;
-      if (currentQuestionIndex < quizData.length) {
-        loadQuestion();
-      } else {
-        showResults();
-      }
+  function nextQuestion() {
+    if (currentIdx < questions.length - 1) {
+      currentIdx++;
+      renderQuestion();
+    } else {
+      showScorecard();
     }
+  }
 
-    function showResults() {
-      document.getElementById('question-card').classList.add('hidden');
-      const resultsCard = document.getElementById('results-card');
-      resultsCard.classList.remove('hidden');
+  function showScorecard() {
+    document.getElementById('quiz-ui').classList.add('hidden');
+    document.getElementById('scorecard-ui').classList.remove('hidden');
 
-      document.getElementById('final-score').textContent = `${score} / ${quizData.length}`;
+    let totalQuizzes = parseInt(localStorage.getItem('anne_quiz_total_quizzes') || '0') + 1;
+    let totalScore = parseInt(localStorage.getItem('anne_quiz_total_score') || '0') + currentScore;
+    let totalQuestions = parseInt(localStorage.getItem('anne_quiz_total_questions') || '0') + questions.length;
 
-      const tierTitle = document.getElementById('tier-title');
-      const tierFeedback = document.getElementById('tier-feedback');
+    localStorage.setItem('anne_quiz_total_quizzes', totalQuizzes);
+    localStorage.setItem('anne_quiz_total_score', totalScore);
+    localStorage.setItem('anne_quiz_total_questions', totalQuestions);
 
-      if (score >= 13) {
-        tierTitle.textContent = 'Mastermind Status!';
-        tierFeedback.textContent = "Outstanding work over coffee! You sailed through historic telegraph lines, 70s rock, classic cinema, and Agatha Christie whodunits with complete confidence.";
-      } else if (score >= 9) {
-        tierTitle.textContent = 'Sharp as a Tack!';
-        tierFeedback.textContent = "A wonderful score! You have great broadsheet instincts across the decades and sciences. Tomorrow's board doesn't stand a chance.";
-      } else {
-        tierTitle.textContent = 'Splendid Warm-Up!';
-        tierFeedback.textContent = 'A fine effort for first thing in the morning. Every great morning start begins with a good challenge—keep that curiosity sharp!';
-      }
+    let avgScore = ((totalScore / totalQuestions) * 100).toFixed(0);
+
+    document.getElementById('final-score').innerText = `${currentScore} / ${questions.length}`;
+    document.getElementById('cumulative-score').innerText = 
+      `Running Total: ${totalScore} correct across ${totalQuizzes} session(s) (${avgScore}% overall average)`;
+
+    const feedbackEl = document.getElementById('final-feedback');
+    if (currentScore >= 13) {
+      feedbackEl.innerText = "Mastermind Status! You sailed through 70s rock, classic cinema, science, and history without missing a beat over morning coffee!";
+    } else if (currentScore >= 9) {
+      feedbackEl.innerText = "Splendid Work! Sharp instincts across every genre. Another quick sip of coffee and you'll clear the board next time!";
+    } else {
+      feedbackEl.innerText = "Fine Warm-Up Effort! A tough set of questions today, but a great start to the morning!";
     }
+  }
 
-    function restartQuiz() {
-      currentQuestionIndex = 0;
-      score = 0;
-      document.getElementById('results-card').classList.add('hidden');
-      document.getElementById('question-card').classList.remove('hidden');
-      loadQuestion();
-    }
+  function restartQuiz() {
+    initApp();
+  }
 
-    // Initialize first question on load
-    loadQuestion();
-  </script>
+  window.onload = initApp;
+</script>
+
 </body>
 </html>
