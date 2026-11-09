@@ -9,20 +9,327 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #fcfbf7;
-      color: #1a1a1a;
-      font-family: 'Newsreader', serif;
+    :root {
+      --paper: #fcfbf7;
+      --ink: #1a1a1a;
+      --stone-800: #292524;
+      --stone-600: #57534e;
+      --stone-300: #d6d3d1;
+      --stone-200: #e7e5e4;
+      --stone-100: #f5f5f4;
+      --amber-soft: rgba(251, 191, 36, 0.08);
+      --green-soft: #dcfce7;
+      --green-strong: #166534;
+      --red-soft: #fee2e2;
+      --red-strong: #7f1d1d;
+      --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
     }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: 'Newsreader', serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
     .broadsheet-title {
       font-family: 'Cinzel', serif;
     }
+
     .broadsheet-body {
       font-family: 'Libre Baskerville', serif;
     }
+
     .border-double-custom {
       border-bottom-style: double;
       border-bottom-width: 4px;
+    }
+
+    #app-container {
+      width: min(100%, 48rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: calc(100vh - 6rem);
+    }
+
+    header {
+      text-align: center;
+      border-bottom: 2px solid var(--stone-800);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .edition-meta {
+      font-size: 0.7rem;
+      letter-spacing: 0.35rem;
+      text-transform: uppercase;
+      color: var(--stone-600);
+      margin-bottom: 0.35rem;
+      font-family: sans-serif;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: var(--stone-800);
+      font-family: 'Cinzel', serif;
+    }
+
+    .date-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-top: 1px solid var(--stone-300);
+      border-bottom: 1px solid var(--stone-300);
+      margin-top: 1rem;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.875rem;
+      font-style: italic;
+      color: var(--stone-600);
+      font-family: sans-serif;
+    }
+
+    #question-card,
+    #results-card {
+      background: rgba(251, 191, 36, 0.05);
+      border: 1px solid var(--stone-300);
+      padding: 1.5rem 1.5rem 1.75rem;
+      box-shadow: var(--card-shadow);
+      position: relative;
+    }
+
+    #results-card {
+      text-align: center;
+    }
+
+    #question-card.hidden,
+    #results-card.hidden,
+    #feedback-container.hidden,
+    #next-btn.hidden {
+      display: none !important;
+    }
+
+    .progress-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      letter-spacing: 0.12rem;
+      text-transform: uppercase;
+      color: var(--stone-500);
+      border-bottom: 1px solid var(--stone-200);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+      font-family: sans-serif;
+    }
+
+    #question-number {
+      font-weight: 700;
+      color: var(--stone-800);
+    }
+
+    #score-counter {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    #question-text {
+      margin: 0;
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      line-height: 1.6;
+      color: var(--stone-800);
+      font-weight: 400;
+    }
+
+    #options-container {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      font-family: sans-serif;
+    }
+
+    #options-container button.option-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.9rem 1rem;
+      border: 1px solid var(--stone-300);
+      background: #fff;
+      color: var(--stone-800);
+      font-size: 1rem;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    #options-container button.option-btn:hover {
+      background: #f9f7f5;
+    }
+
+    #options-container button.option-btn.is-correct {
+      background: var(--green-soft);
+      border-color: #22c55e;
+      color: var(--green-strong);
+      font-weight: 700;
+    }
+
+    #options-container button.option-btn.is-wrong {
+      background: var(--red-soft);
+      border-color: #f87171;
+      color: var(--red-strong);
+    }
+
+    #feedback-container {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--stone-100);
+      border-left: 4px solid var(--stone-800);
+      color: var(--stone-800);
+    }
+
+    #feedback-result {
+      margin: 0 0 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12rem;
+      font-family: sans-serif;
+      text-transform: uppercase;
+    }
+
+    #feedback-result.correct {
+      color: var(--green-strong);
+    }
+
+    #feedback-result.incorrect {
+      color: var(--red-strong);
+    }
+
+    #knowledge-bite {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      font-family: 'Libre Baskerville', serif;
+    }
+
+    #next-btn {
+      display: inline-block;
+      background: var(--stone-800);
+      color: #f8fafc;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-family: sans-serif;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    #next-btn:hover {
+      background: #44403c;
+    }
+
+    .next-wrap {
+      margin-top: 1.5rem;
+      text-align: right;
+    }
+
+    #results-card h2 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--stone-900);
+      font-family: 'Cinzel', serif;
+    }
+
+    .results-subtitle {
+      margin: 0 0 1.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.3rem;
+      text-transform: uppercase;
+      color: var(--stone-500);
+      font-family: sans-serif;
+    }
+
+    #final-score {
+      margin: 1rem 0;
+      font-size: clamp(2.5rem, 7vw, 4rem);
+      font-weight: 800;
+      color: var(--stone-900);
+      font-family: sans-serif;
+    }
+
+    .results-tier {
+      border-top: 1px solid var(--stone-300);
+      border-bottom: 1px solid var(--stone-300);
+      padding: 1.5rem 0;
+      margin: 1.5rem 0;
+    }
+
+    #tier-title {
+      margin: 0 0 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--stone-800);
+      font-family: 'Cinzel', serif;
+    }
+
+    #tier-feedback {
+      margin: 0 auto;
+      max-width: 40rem;
+      line-height: 1.75;
+      font-size: 1rem;
+      color: var(--stone-700);
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+    }
+
+    .results-button {
+      background: var(--stone-800);
+      color: #f8fafc;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.2rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-family: sans-serif;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--stone-500);
+      border-top: 1px solid var(--stone-300);
+      padding-top: 1rem;
+      font-family: sans-serif;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.25rem 0.75rem; }
+      #question-card,
+      #results-card { padding: 1.25rem 1rem; }
+      .date-bar { flex-direction: column; text-align: center; }
+      .progress-bar { gap: 0.5rem; font-size: 0.68rem; }
+      #options-container button.option-btn { font-size: 0.95rem; }
+      #next-btn, .results-button { letter-spacing: 0.12rem; }
     }
   </style>
 </head>
@@ -30,9 +337,9 @@
 
   <!-- Header -->
   <header class="text-center border-b-2 border-stone-800 pb-4 mb-6">
-    <div class="text-xs uppercase tracking-widest text-stone-600 mb-1 font-sans">The Morning Broadsheet Edition</div>
-    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 broadsheet-title uppercase">Anne's Daily Quiz</h1>
-    <div class="mt-2 text-sm italic text-stone-600 flex justify-between border-t border-b border-stone-300 py-1 px-2 mt-4 font-sans">
+    <div class="edition-meta">The Morning Broadsheet Edition</div>
+    <h1>Anne's Daily Quiz</h1>
+    <div class="date-bar">
       <span>15 Breakfast Questions</span>
       <span id="quiz-date">Daily Edition</span>
       <span>Read-Aloud Format</span>
@@ -46,7 +353,7 @@
     <div id="question-card" class="bg-amber-50/40 border border-stone-300 p-6 sm:p-8 rounded-none shadow-sm relative">
       
       <!-- Progress & Category Bar -->
-      <div class="flex justify-between items-center text-xs font-sans tracking-wide uppercase text-stone-500 border-b border-stone-200 pb-3 mb-6">
+      <div class="progress-bar">
         <span id="question-number" class="font-bold text-stone-800">Question 1 of 15</span>
         <span id="score-counter" class="font-mono">Score: 0</span>
       </div>
@@ -70,7 +377,7 @@
       </div>
 
       <!-- Next Button -->
-      <div class="mt-6 text-right">
+      <div class="next-wrap">
         <button id="next-btn" onclick="nextQuestion()" class="hidden bg-stone-900 hover:bg-stone-800 text-amber-50 px-6 py-2.5 font-sans uppercase text-xs tracking-widest font-semibold transition-colors">
           Next Question &rarr;
         </button>
@@ -80,16 +387,16 @@
     <!-- Results View (Hidden by default) -->
     <div id="results-card" class="hidden bg-amber-50/40 border border-stone-300 p-8 text-center">
       <h2 class="text-3xl font-bold broadsheet-title text-stone-900 mb-2">Quiz Complete!</h2>
-      <p class="text-sm font-sans uppercase tracking-widest text-stone-500 mb-6">Breakfast Table Scorecard</p>
+      <p class="results-subtitle">Breakfast Table Scorecard</p>
       
       <div class="text-5xl font-extrabold text-stone-900 font-sans my-4" id="final-score">0 / 15</div>
       
-      <div class="border-t border-b border-stone-300 py-6 my-6">
+      <div class="results-tier">
         <p id="tier-title" class="text-xl font-bold text-stone-800 mb-2 broadsheet-title"></p>
         <p id="tier-feedback" class="text-base text-stone-700 leading-relaxed max-w-xl mx-auto broadsheet-body italic"></p>
       </div>
 
-      <button onclick="restartQuiz()" class="bg-stone-900 hover:bg-stone-800 text-amber-50 px-8 py-3 font-sans uppercase text-xs tracking-widest font-semibold transition-colors">
+      <button onclick="restartQuiz()" class="results-button">
         Try Again / New Round
       </button>
     </div>
@@ -97,7 +404,7 @@
   </main>
 
   <!-- Footer -->
-  <footer class="mt-8 text-center text-xs font-sans text-stone-500 border-t border-stone-300 pt-4">
+  <footer>
     Crafted for reading out loud over breakfast • No dynamic backend required
   </footer>
 
@@ -216,13 +523,14 @@
       
       current.options.forEach((opt, index) => {
         const btn = document.createElement('button');
-        btn.className = "w-full text-left p-3.5 border border-stone-300 bg-white hover:bg-stone-50 font-medium text-stone-800 transition-colors flex justify-between items-center";
+        btn.className = 'option-btn';
         btn.textContent = opt;
         btn.onclick = () => selectOption(index);
         optionsContainer.appendChild(btn);
       });
 
-      document.getElementById('feedback-container').classList.add('hidden');
+      const feedbackContainer = document.getElementById('feedback-container');
+      feedbackContainer.classList.add('hidden');
       document.getElementById('next-btn').classList.add('hidden');
     }
 
@@ -236,20 +544,17 @@
       const feedbackResult = document.getElementById('feedback-result');
       const knowledgeBite = document.getElementById('knowledge-bite');
 
+      buttons[index].classList.add(index === current.answer ? 'is-correct' : 'is-wrong');
+
       if (index === current.answer) {
         score++;
         document.getElementById('score-counter').textContent = `Score: ${score}`;
-        buttons[index].classList.remove('bg-white', 'hover:bg-stone-50');
-        buttons[index].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
-        feedbackResult.textContent = "Correct!";
-        feedbackResult.className = "font-bold font-sans text-sm uppercase tracking-wider mb-1 text-emerald-800";
+        feedbackResult.textContent = 'Correct!';
+        feedbackResult.className = 'correct';
       } else {
-        buttons[index].classList.remove('bg-white', 'hover:bg-stone-50');
-        buttons[index].classList.add('bg-rose-100', 'border-rose-400', 'text-rose-900');
-        buttons[current.answer].classList.remove('bg-white', 'hover:bg-stone-50');
-        buttons[current.answer].classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
-        feedbackResult.textContent = "Not quite!";
-        feedbackResult.className = "font-bold font-sans text-sm uppercase tracking-wider mb-1 text-rose-800";
+        buttons[current.answer].classList.add('is-correct');
+        feedbackResult.textContent = 'Not quite!';
+        feedbackResult.className = 'incorrect';
       }
 
       knowledgeBite.textContent = current.bite;
@@ -277,14 +582,14 @@
       const tierFeedback = document.getElementById('tier-feedback');
 
       if (score >= 13) {
-        tierTitle.textContent = "Mastermind Status!";
+        tierTitle.textContent = 'Mastermind Status!';
         tierFeedback.textContent = "Outstanding work over coffee! You sailed through historic telegraph lines, 70s rock, classic cinema, and Agatha Christie whodunits with complete confidence.";
       } else if (score >= 9) {
-        tierTitle.textContent = "Sharp as a Tack!";
+        tierTitle.textContent = 'Sharp as a Tack!';
         tierFeedback.textContent = "A wonderful score! You have great broadsheet instincts across the decades and sciences. Tomorrow's board doesn't stand a chance.";
       } else {
-        tierTitle.textContent = "Splendid Warm-Up!";
-        tierFeedback.textContent = "A fine effort for first thing in the morning. Every great morning start begins with a good challenge—keep that curiosity sharp!";
+        tierTitle.textContent = 'Splendid Warm-Up!';
+        tierFeedback.textContent = 'A fine effort for first thing in the morning. Every great morning start begins with a good challenge—keep that curiosity sharp!';
       }
     }
 
