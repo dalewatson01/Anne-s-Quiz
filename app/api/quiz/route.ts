@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+export const maxDuration = 60;
+
+const GEMINI_MODEL = 'gemini-2.5-flash';
+
 export async function GET() {
   const today = new Date().toLocaleDateString('en-AU', {
     timeZone: 'Australia/Melbourne',
@@ -23,10 +27,10 @@ Return only a JSON array with objects containing question, options (four strings
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: { responseMimeType: 'application/json' },
@@ -35,7 +39,7 @@ Return only a JSON array with objects containing question, options (four strings
     );
 
     if (!response.ok) {
-      throw new Error(`Gemini request failed with status ${response.status}`);
+      throw new Error(`Gemini request failed with status ${response.status}: ${await response.text()}`);
     }
 
     const data = await response.json();
