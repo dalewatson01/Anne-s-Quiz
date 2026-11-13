@@ -29,7 +29,7 @@ Use this exact structure with no markdown or backticks in your reply:
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,8 +54,6 @@ Use this exact structure with no markdown or backticks in your reply:
     }
 
     let rawText = candidate.content.parts[0].text;
-    
-    // Clean up any accidental markdown code blocks
     rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
     
     const quizJson = JSON.parse(rawText);
@@ -69,3 +67,4 @@ Use this exact structure with no markdown or backticks in your reply:
     );
   }
 }
+
