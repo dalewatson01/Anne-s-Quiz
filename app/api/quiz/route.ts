@@ -1,55 +1,58 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const today = new Date().toLocaleDateString('en-AU', {
+  const today = new Date().toLocaleDateString('en-AU', { 
     timeZone: 'Australia/Melbourne',
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
+    day: 'numeric'
   });
 
-  const prompt = `Generate a 15-question general knowledge quiz for ${today}.
-Topics should cover history, literature, cinema, science, music, and general trivia.
-Return only a JSON array with objects containing question, options (four strings), correctAnswer (zero-based number), and explanation.`;
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'The quiz service is not configured. Set GEMINI_API_KEY to enable daily questions.' },
-      { status: 503 },
-    );
-  }
+  const prompt = `Generate a 15-question general knowledge quiz for ${today}. 
+  Topics should cover history, science, literature, architectural crafts, geography, and popular culture and music from the 1960s onward, with a difficulty of 60/100.
+  
+  Return strictly valid JSON format matching this array structure with no extra text or markdown formatting:
+  [
+    {
+      "question": "Question text here",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": 0,
+      "explanation": "Brief 1-sentence background/context."
+    }
+  ]`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: 'application/json' },
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error(`Gemini request failed with status ${response.status}`);
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY environment variable is not configured.");
     }
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      })
+    });
 
     const data = await response.json();
-    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) throw new Error('Gemini returned no quiz content.');
+    
+    if (!data.candidates || data.candidates.length === 0) {
+      throw new Error("No candidates returned from Gemini API.");
+    }
+
+    let rawText = data.candidates[0].content.parts[0].text;
+    
+    // Strip markdown code blocks if Gemini accidentally includes them
+    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
 
     const questions = JSON.parse(rawText);
-    if (!Array.isArray(questions) || questions.length === 0) {
-      throw new Error('Gemini returned an invalid quiz.');
-    }
 
     return NextResponse.json({ date: today, questions });
   } catch (error) {
-    console.error('AI quiz generation failed:', error);
-    return NextResponse.json({ error: 'Failed to generate today’s quiz.' }, { status: 502 });
+    console.error("AI Generation Error:", error);
+    return NextResponse.json({ error: "Failed to generate daily quiz", details: String(error) }, { status: 500 });
   }
 }
