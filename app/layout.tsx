@@ -1,4 +1,4 @@
-export const metadata = {
+  export const metadata = {
   title: "Anne's Daily Quiz",
   description: 'A daily broadsheet general knowledge quiz',
 };
